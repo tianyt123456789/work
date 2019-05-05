@@ -1,0 +1,105 @@
+安装libevent、libfastcommon
+yum -y install libevent
+mv libfastcommonV1.0.7.tar.gz /usr/local/
+cd /usr/local/
+tar -zxvf libfastcommonV1.0.7.tar.gz
+cd libfastcommon-1.0.7/
+./make.sh
+./make.sh install
+cp /usr/lib64/libfastcommon.so /usr/lib/
+
+安装tracker：
+mv FastDFS_v5.05.tar.gz /usr/local/
+cd /usr/local/
+tar -zxvf FastDFS_v5.05.tar.gz
+cd FastDFS
+./make.sh
+./make.sh install
+cd conf/
+cp * /etc/fdfs/
+cd /etc/fdfs/
+vim tracker.conf
+	base_path=/home/yuqing/fastdfs修改为：base_path=/home/fastdfs
+mkdir /home/fastdfs
+/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart（执行两次）
+
+
+安装storage：
+cd /etc/fdfs/
+vim storage.conf
+	base_path=/home/yuqing/fastdfs改为：base_path=/home/fastdfs
+	store_path0=/home/yuqing/fastdfs改为：store_path0=/home/fastdfs/fdfs_storage
+	tracker_server=192.168.37.161:22122
+mkdir /home/fastdfs/fdfs_storage
+/usr/bin/fdfs_storaged /etc/fdfs/storage.conf restart（执行两次）
+
+
+测试：
+vim /etc/fdfs/client.conf
+	base_path=/home/fastdfs
+	tracker_server=192.168.37.161:22122
+/usr/bin/fdfs_test /etc/fdfs/client.conf upload install.log
+
+安装Nginx-model
+mv fastdfs-nginx-module_v1.16.tar.gz  /usr/local/
+cd /usr/local/
+tar -zxvf fastdfs-nginx-module_v1.16.tar.gz
+cd fastdfs-nginx-module/src/
+vim config
+	修改config文件将/usr/local/路径改为/usr/
+cp mod_fastdfs.conf /etc/fdfs/
+vim /etc/fdfs/mod_fastdfs.conf
+	base_path=/home/fastdfs
+	tracker_server=192.168.198.129:22122
+	url_have_group_name=true
+	store_path0=/home/fastdfs/fdfs_storage
+cp /usr/lib64/libfdfsclient.so /usr/lib/
+mkdir -p /var/temp/nginx/client
+
+安装Nginx
+yum -y install pcre-devel
+yum install -y zlib-devel
+tar -zxvf nginx-1.8.0.tar.gz
+cd nginx-1.8.0（进入解压目录中,执行下面的脚本）
+
+./configure \
+--prefix=/usr/local/nginx \
+--pid-path=/var/run/nginx/nginx.pid \
+--lock-path=/var/lock/nginx.lock \
+--error-log-path=/var/log/nginx/error.log \
+--http-log-path=/var/log/nginx/access.log \
+--with-http_gzip_static_module \
+--http-client-body-temp-path=/var/temp/nginx/client \
+--http-proxy-temp-path=/var/temp/nginx/proxy \
+--http-fastcgi-temp-path=/var/temp/nginx/fastcgi \
+--http-uwsgi-temp-path=/var/temp/nginx/uwsgi \
+--http-scgi-temp-path=/var/temp/nginx/scgi \
+--add-module=/usr/local/fastdfs-nginx-module/src
+
+make
+make install
+vim /usr/local/nginx/conf/nginx.conf
+server {
+        listen       80;
+        server_name  192.168.37.161;
+
+        location /group1/M00/{
+                ngx_fastdfs_module;
+        }
+}
+/usr/local/nginx/sbin/nginx  // 启动Nginx
+
+
+
+service iptables stop
+chkconfig iptables off
+http://192.168.37.161/group1/M00/00/00/wKgloVet2pmAKCe-AAFd-94XTw0759_big.jpg
+
+
+开机启动
+vim /etc/rc.d/rc.local
+/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart
+/usr/bin/fdfs_storaged /etc/fdfs/storage.conf restart
+/usr/local/nginx/sbin/nginx
+
+

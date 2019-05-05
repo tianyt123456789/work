@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{/admin/layout/fragments :: header}"></div>
+    <title>TMC营销平台</title>
+    <link rel="stylesheet" th:href="@{'/content/css/iflight.css'+${yslTsStatic.getProductVer()}}" type="text/css">
+</head>
+
+
+<body>
+
+<div id="app" style="padding: 30px;">
+   <!-- <form action="" method="post" id="formId">-->
+    <div class="pageheader">
+        <div class="pull-left">
+            <h4>出票订单操作</h4></div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="input-bigbox" style="margin-top: -30px;margin-bottom: -10px;">
+        <div class="input-navon "></div>
+    </div>
+    <br />
+    <blockquote><p>订单基本信息</p></blockquote>
+    <input type="hidden" id="issueOrderId" name="issueOrderId" th:value="${iorder.issueOrderId}"/>
+    <table class="table  table-bordered table-condensed fortarow">
+        <tr>
+            <td style="width: 10%;">订单号：</td>
+            <td style="width: 22%;" th:text="${iorder.issueOrderNo }"> </td>
+            <td style="width: 10%;" >订单状态：</td>
+            <td style="width: 22%;" class="text-danger" th:text="${iorder.orderStatusName}"></td>
+            <td style="width: 10%;">GDS类型：</td>
+            <td th:text="${iorder.gdsTypeName}"></td>
+
+        </tr>
+        <tr>
+            <td>小编码：</td>
+            <td th:text="${iorder.gdsPnr }"></td>
+            <td>大编码：</td>
+            <td th:text="${iorder.airlinePnr }"></td>
+            <td>小编码(新)：</td>
+            <td th:text="${iorder.gdsPnrNew }"></td>
+        </tr>
+        <tr>
+            <td>大编码(新)：</td>
+            <td th:text="${iorder.airlinePnrNew }"></td>
+            <td>订单来源入口：</td>
+            <td th:text="${iorder.orderSourceName}"></td>
+            <td>出票航司：</td>
+            <td th:text="${iorder.ticketAirlineCode }"></td>
+        </tr>
+
+
+        <tr>
+            <td>政策号：</td>
+            <td th:text="${''!=iorder.salesSetNo }?${iorder.newPolicyNo }:${iorder.policyNo }"></td>
+           <!-- <td>新政策号：</td>
+            <td th:text="${iorder.newPolicyNo }"></td>-->
+            <td>创建时间：</td>
+            <td  th:text="${#dates.format(iorder.createTime,'yyyy-MM-dd HH:mm')}" ></td>
+            <td>企业客户名称：</td>
+            <td th:text="${iorder.companyName }"></td>
+        </tr>
+
+        <tr>
+            <td>出票操作时间：</td>
+            <td th:text="${#dates.format(iorder.ticketOperateTime,'yyyy-MM-dd HH:mm')}"  ></td>
+            <td>最晚支付时间：</td>
+            <td th:text="${#dates.format(iorder.latePaymentTime,'yyyy-MM-dd HH:mm')}"  ></td>
+            <td>联系人：</td>
+            <td th:text="${iorder.purchaserContact }"></td>
+        </tr>
+
+
+
+        <tr>
+            <td>联系方式：</td>
+            <td th:text="${iorder.purchaserPhone }"></td>
+            <td>授权OFFICE号</td>
+            <td th:text="${iorder.pnrAccreditOffice }"></td>
+            <td>授权联系方式：</td>
+            <td th:text="${iorder.pnrAccreditContact }"></td>
+        </tr>
+
+        <tr>
+            <td>购票限制：</td>
+            <td colspan="5"th:text="${iorder.iorderIssueTxt!=null?iorder.iorderIssueTxt.ticketLimitRule:'' }" ></td>
+        </tr>
+    </table>
+    <br />
+    <blockquote><p>航程信息</p></blockquote>
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+        <tr class="table-th" style="border-top: 2px solid #293038;">
+            <th style="border: solid 1px #37424F;">行程</th>
+            <th style="border: solid 1px #37424F;">航司</th>
+            <th style="border: solid 1px #37424F;">航班号</th>
+            <th style="border: solid 1px #37424F;">舱位</th>
+            <th style="border: solid 1px #37424F;">出发</th>
+            <th style="border: solid 1px #37424F;">到达</th>
+            <th style="border: solid 1px #37424F;">起飞时间</th>
+            <th style="border: solid 1px #37424F;">到达时间</th>
+        </tr>
+        </thead>
+        <tr th:each="seg,status  : ${iorder.issueSegmentList }">
+            <td th:text="'第'+${seg.indexs }+'段'"></td>
+            <td><span th:text="${seg.airlineName }"></span>(<span th:text="${seg.airlineCode }"></span>)</td>
+            <td th:text="${seg.flightNo }"></td>
+            <td th:text="${seg.cabin }"></td>
+            <td ><span th:text="${seg.depName }"></span>(<span th:text="${seg.depCode }"></span>)</td>
+            <td><span th:text="${seg.arrName }"></span>(<span th:text="${seg.arrCode }"></span>)</td>
+            <td  th:text="${#dates.format(seg.depDateTime,'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#dates.format(seg.arrDateTime,'yyyy-MM-dd HH:mm')}" ></td>
+        </tr>
+    </table>
+    <br />
+
+    <blockquote><p>乘客信息</p></blockquote>
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+        <tr class="table-th" style="border-top: 2px solid #293038;">
+            <th style="border: solid 1px #37424F;">乘客姓名</th>
+            <th style="border: solid 1px #37424F;">乘客类型</th>
+            <th style="border: solid 1px #37424F;">性别</th>
+            <th style="border: solid 1px #37424F;">护照号</th>
+            <th style="border: solid 1px #37424F;">证件有效期</th>
+            <th style="border: solid 1px #37424F;">出生日期</th>
+            <th style="border: solid 1px #37424F;">国籍</th>
+            <th style="border: solid 1px #37424F;">票号</th>
+
+            <th style="border: solid 1px #37424F;">乘客手机号</th>
+            <th style="border: solid 1px #37424F;">退改信息</th>
+        </tr>
+        </thead>
+        <tr  th:each="ipg,status  : ${iorder.issuePassengerList }" >
+            <td th:text="${ipg.englishName }"></td>
+            <td th:text="${ipg.passengerTypeName}"></td>
+            <td th:text="${ipg.sexName}"></td>
+            <td th:text="${ipg.paperNo }"></td>
+            <td th:text="${#dates.format(ipg.paperExpDate,'yyyy-MM-dd')}"></td>
+            <td th:text="${#dates.format(ipg.birthday,'yyyy-MM-dd')}"></td>
+            <td th:text="${ipg.passengerCountry }"></td>
+            <td >自<span  th:text="${ipg.ticketBegin}"> </span><br/>至<span th:text="${ipg.ticketEnd}"></span></td>
+
+            <td th:text="${ipg.mobilePhone }"></td>
+            <td>
+                <a  th:if="${ipg.isChangeOrder=='1'}"  name="isChangeOrder" id="isChangeOrder"  th:attr="(orderId=${iorder.issueOrderId})"   class="fBlue unline hand">[有改期]</a>
+                <a th:if="${ipg.isRefundOrder=='1'}" name="isRefundOrder" id="isRefundOrder" th:attr="(orderId=${iorder.issueOrderId})"   class="fBlue unline hand">[有退废]</a>
+
+            </td>
+        </tr>
+    </table>
+    <br />
+
+
+
+    <blockquote><p>出票价格信息</p></blockquote>
+    <table class="table table-striped table-bordered table-hover table-condensed">
+
+        <thead>
+        <tr class="table-th" style="border-top: 2px solid #293038;">
+            <th style="border: solid 1px #37424F;">类型</th>
+            <th style="border: solid 1px #37424F;">奖励票面价</th>
+            <th style="border: solid 1px #37424F;">无奖励票面价</th>
+            <th style="border: solid 1px #37424F;">代理点</th>
+            <th style="border: solid 1px #37424F;">采购奖励点数</th>
+            <th style="border: solid 1px #37424F;">采购奖励金额</th>
+            <th style="border: solid 1px #37424F;">税金</th>
+            <th style="border: solid 1px #37424F;">开票费</th>
+            <th style="border: solid 1px #37424F;">平台手续费</th>
+            <th style="border: solid 1px #37424F;">采购单人结算价</th>
+            <th style="border: solid 1px #37424F;">人数</th>
+        </tr>
+        </thead>
+        <tr th:each="ipid,status  : ${iorder.issuePriceDetailList }">
+            <td>
+                <span  th:if="${ipid!=null}?${ipid.priceType=='1'}" th:value="0">成人<input type="hidden" id="adtCount" th:value="${ipid.personCount }"/></span>
+                <span  th:if="${ipid!=null}?${ipid.priceType=='2'}" th:value="1">儿童<input type="hidden" id="chdCount" th:value="${ipid.personCount }"/></span>
+                <span  th:if="${ipid!=null}?${ipid.priceType=='3'}" th:value="2">婴儿<input type="hidden" id="babyCount" th:value="${ipid.personCount }"/></span>
+            </td>
+            <td>
+                <span th:text="'￥'+${ipid.bonusTicketPrice}"></span>
+            </td>
+            <td>
+                <span th:text="'￥'+${ipid.nobonusTicketPrice}"></span>
+            </td>
+
+            <td th:text="${ipid.agentPoint }+'%'"></td>
+
+            <td>
+                <span th:text="${ipid.phsBonusPoint}+'%'"></span>
+            </td>
+
+            <td>
+               <span th:text="'￥'+${ipid.phsBonusAmount}"></span>
+            </td>
+
+
+            <td th:text="'￥'+${ipid.tax }"></td>
+
+            <td>
+                <span th:text="'￥'+${ipid.billingFee}"></span>
+            </td>
+
+            <td>
+                <span th:text="'￥'+${ipid.platAdd}"></span>
+            </td>
+
+            <td>
+                <span th:text="'￥'+${ipid.phsSettlementPrice}"></span>
+            </td>
+            <td th:text="${ipid.personCount }"></td>
+        </tr>
+    </table>
+    <div class="forms-search" style="margin-top: -17px;">
+            <div class="row" style="text-align: right;">
+                <div class="col-xs-6">
+                </div>
+                <div class="col-xs-6" style="margin-top: 5px;">
+                    <strong>采购价格合计：<span style="font-size: 20px;color:red;" th:text="${iorder.iorderIssuePrice.totalPayFare}+'元'"> </span></strong>
+                </div>
+
+            </div>
+    </div>
+    <br />
+
+
+    <div class="text-left">
+        <button type="button" id="btnSSText"  th:attr="(orderId=${iorder.issueOrderId})" class="btn btn-danger">快速定位</button>
+
+        <button type="button"  id="btnFSIText" th:attr="(orderId=${iorder.issueOrderId})"  class="btn btn-danger">快速审核</button>
+
+
+    </div>
+
+
+        <blockquote><p>拒单信息</p></blockquote>
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+            <tr class="table-th" style="border-top: 2px solid #293038;">
+                <th style="border: solid 1px #37424F;" class="col-xs-4">拒单原因</th>
+                <th style="border: solid 1px #37424F;" class="col-xs-5">拒单内容</th>
+                <th style="border: solid 1px #37424F;" class="col-xs-2">拒单时间</th>
+                <th style="border: solid 1px #37424F;" class="col-xs-1">帐号</th>
+            </tr>
+            </thead>
+            <tr th:each="businessRefuse: ${iorder.businessRefuseList}">
+                <td th:text="${businessRefuse.refuseReason}"></td>
+                <td th:text="${businessRefuse.refuseReasonRemark}"></td>
+                <td th:text="${#dates.format(businessRefuse.refuseTime,'yyyy-MM-dd HH:mm')}"></td>
+                <td>平台</td>
+            </tr>
+        </table>
+        <br />
+    <blockquote><p>日志信息</p></blockquote>
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+        <tr class="table-th" style="border-top: 2px solid #293038;">
+            <th style="border: solid 1px #37424F;" class="col-xs-4">简要日志</th>
+            <th style="border: solid 1px #37424F;" class="col-xs-2">时间</th>
+            <th style="border: solid 1px #37424F;" class="col-xs-1">帐号</th>
+        </tr>
+        </thead>
+        <tr th:each="businessLog: ${iorder.businessLogList}">
+            <td th:text="${businessLog.custEnable=='1'}?${businessLog.simpleContent}"><span th:text="${businessLog.custEnable}"></span><span th:text="${businessLog.optBelongType}"></span></td>
+            <td th:text="${businessLog.custEnable=='1'}?${#dates.format(businessLog.optStartTime,'yyyy-MM-dd HH:mm')}"></td>
+            <td th:if="${businessLog.custEnable=='1' }" >
+                <span th:if="${businessLog.optBelongType == '0'}">平台</span>
+                <span th:if="${businessLog.optBelongType == '1'}"  th:text="${businessLog.optPersonName}"></span>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div th:replace="~{/common/fileUpload :: file_template(${iorder.issueOrderId},'出票','agent','')}" ></div>
+    <br />
+    <div th:replace="~{/common/businessRemarkTemplate :: remark_template(${iorder.issueOrderId},${iorder.issueOrderNo},'01','agent')}"></div>
+    <br />
+    <div class="toolbar-fixed-bottom">
+        <button type="button" id="btnClose" th:attr="(orderId=${iorder.issueOrderId})" class="btn btn-danger">关闭</button>
+        <span class="f16 fGray"> ︱</span>
+        <button type="button" th:if="${iorder!=null}?${iorder.orderStatus=='002'}" class="btn btn-success" id="btnCheckRefuseResubmit" th:attr="(orderId=${iorder.issueOrderId}),(orderStatus='000')">重新提交</button>
+        <span class="f16 fGray" th:if="${iorder!=null}?${iorder.orderStatus=='002'}"> ︱</span>
+        <button type="button" th:if="${iorder!=null}?${iorder.orderStatus=='001'}" class="btn btn-success" id="btnTicketConfirm" th:attr="(orderId=${iorder.issueOrderId}),(orderStatus='003')">确认出票</button>
+        <span class="f16 fGray" th:if="${iorder!=null}?${iorder.orderStatus=='001'}"> ︱</span>
+        <button type="button"   th:if="${iorder!=null}?${iorder.orderStatus=='001' || iorder.orderStatus=='002' || iorder.orderStatus=='005'}" class="btn btn-success" id="btnCancleOrder" th:attr="(orderId=${iorder.issueOrderId}),(orderStatus='098')">取消订单</button>
+        <span class="f16 fGray" th:if="${iorder!=null}?${iorder.orderStatus=='001' || iorder.orderStatus=='002' || iorder.orderStatus=='005'}" > ︱</span>
+        <button type="button" th:if="${iorder!=null}?${iorder.orderStatus=='005'}" class="btn btn-success" id="btnContinueOrder" th:attr="(orderId=${iorder.issueOrderId}),(orderStatus='003')">继续出票</button>
+        <span class="f16 fGray" th:if="${iorder!=null}?${iorder.orderStatus=='005'}"> ︱</span>
+        <button type="button" th:if="${iorder!=null}?${iorder.orderStatus=='001' || iorder.orderStatus=='002'}" class="btn btn-success" id="btnChangeVenderPayBefore" th:attr="(orderId=${iorder.issueOrderId})">换供应商</button>
+        <span class="f16 fGray" th:if="${iorder!=null}?${iorder.orderStatus=='001' || iorder.orderStatus=='002'}"> ︱</span>
+        <span class="f16 fGray" th:if="${iorder!=null}?${iorder.orderStatus=='099'}"> ︱</span>
+        <input type="button" value="申请改票" th:if="${iorder!=null}?${iorder.orderStatus=='099'}" id="btnApplyChangeTicket"  th:attr="(orderId=${iorder.issueOrderId})"   class="btn btn-primary"/>
+        <span class="f16 fGray" th:if="${iorder!=null}?${iorder.orderStatus=='099'}"> ︱</span>
+        <input type="button" value="申请退票" th:if="${iorder!=null}?${iorder.orderStatus=='099'}" id="btnApplyRefundTicket"  th:attr="(orderId=${iorder.issueOrderId})"  class="btn btn-danger"/>
+
+    </div>
+
+
+
+</div>
+<div th:replace="~{/admin/layout/fragments :: footer}"></div>
+<script th:src="@{'/content/jslib/paginator/paginatorCustom.js'+${yslTsStatic.getProductVer()}}" type="application/javascript"></script>
+<script th:src="@{'/content/agent/js/order/iorderIssueDetail_c.js'+${yslTsStatic.getProductVer()}}" type="application/javascript"></script>
+</body>
+</html>

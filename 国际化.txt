@@ -1,0 +1,21 @@
+<script language="javascript">
+            function i18n(lang) {
+                var src=window.location.href;
+                if(src!=null&&src.indexOf("?")==-1){
+                    location.href= src+="?language="+lang;
+                }else if(src.indexOf("&")==-1) {
+                    var str = src.split("language");
+                    location.href=str[0]+"&language="+lang;
+                }else {
+                    var str = src.split("&language");
+                    location.href=str[0]+"&language="+lang;
+                }
+            }
+		</script>
+
+
+<select class="btn submitBtn theme${inviteData.consult_dialog_color!''}">
+	<option disabled="disabled" selected="selected" class="btn submitBtn theme${inviteData.consult_dialog_color!''}" >		${leavemsg_mess_pleaseChoose}</option>
+	<option  onclick="i18n('en_US') " class="btn submitBtn theme${inviteData.consult_dialog_color!''}" >English</option>
+	<option  onclick="i18n('zh_CN')"  class="btn submitBtn theme${inviteData.consult_dialog_color!''}" >ÖÐÎÄ</option>
+</select>

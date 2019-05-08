@@ -1,0 +1,7 @@
+window.onbeforeunload = function() {
+    //这里刷新方法有很多，具体要看你的子窗口是怎样出来的
+    window.opener.location.reload();
+    //parent.location.reload();
+    //self.opener.location.reload();
+    //window.opener.location.href=window.opener.location.href; //子窗口是用 window.open()打开的
+};

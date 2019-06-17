@@ -1,0 +1,5 @@
+1、在遇到idea新建工作空间下载完新的项目时，它的html热部署需从新布置：
+   解决方案：
+          1、 File - Settings - BuiId，Execution，Deployment - Compiler - 勾选上 Build project automatically选项----Apply OK
+          2、 在 Resurce patterns文本框中 手动添加一个自动加载项 ?*.html;!?*
+          3、 按下Shift + Ctrl + Alt + / 选中 Registry --- 进入编辑区 --- 勾选上 compiler.automake.allow.app.ruuing即可。

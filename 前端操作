@@ -1,4 +1,4 @@
-js关闭当前页，刷新能一个页面
+1.js关闭当前页，刷新能一个页面
 window.onbeforeunload = function() {
     //这里刷新方法有很多，具体要看你的子窗口是怎样出来的
     window.opener.location.reload();
@@ -6,7 +6,7 @@ window.onbeforeunload = function() {
     //self.opener.location.reload();
     //window.opener.location.href=window.opener.location.href; //子窗口是用 window.open()打开的
 };
-单选框和复选框
+2.单选框和复选框
 <div>性别:
 		<label><input type="radio" name="sex" value="男生">男生</label>
 		<label><input type="radio" name="sex" value="女生">女生</label>
@@ -18,3 +18,9 @@ window.onbeforeunload = function() {
 		<label><input type="checkbox" name="like" value="1">旅游</label>
 	</div>
 其中在input标签外面加上lable标签的作用是在点击文字的时候也会选中或者取消，提高用户体验度
+
+3.取value值 $(#"id").val() 设置value值$("#id).val(newval);
+
+4.设置input的隐藏/不隐藏 $("#id").attr("type","hidden"/"")visible;  设置其他的隐藏/不隐藏 $("#id").css("visibility","hidden"/"")visible;
+设置是否显示/不显示$("#id").css("display","none"/"")inline;
+

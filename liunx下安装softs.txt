@@ -1,0 +1,83 @@
+把本地文件上传到服务器命令是 ： scp 本地的决定路径 root@服务器名:/路径
+scp car.txt root@192.168.1.147:/home
+备注：把本机car.txt拷贝到147这台服务器的home目录下，需要提供147的密码
+
+一、SVNserver安装
+https://www.cnblogs.com/javayu/p/6165312.html
+0.验证是否有svnserver (svnserve --version)
+1.安装svnserver (yum install -y subversion)
+2.验证是否安装成功 (svnserve --version)
+3.创建进入到svn的资源目录 (cd /usr/svndir）
+4.创建svn资源库 (svnadmin create myProject)
+5.新增用户 
+6.配置用户权限 
+7.配置资源库权限 
+8.启动或者重启 
+9.测试
+10.设置开机启动 https://www.cnblogs.com/zengjiqiang/p/7413910.html （把要执行的文件都设置执行权限 chmod 777（rwx） index.htm）
+（访问地址：svn://39.96.221.183:3691 
+ admin账号密码 admin=admin0000）
+
+二、安装nexus ：maven 私服
+https://www.cnblogs.com/grey-wolf/p/6481166.html
+（访问地址：http://39.96.221.183:8081/
+默认账号密码admin=admin123 ）
+
+三、安装Redmine
+注意：（redmine集成了mysql和svn等工具，而且用的都是他们的集成的）
+
+下载地址：https://bitnami.com/stacks
+下载一个bitnami-redmine-4.0.3-3-linux-x64-installer.run
+./bitnami-redmine-4.0.3-3-linux-x64-installer.run安装
+
+卸载的时候 先找到redmine根目录。再执行./uninstall
+
+启动mysql：进入redmine根目录执行./use_redmine 
+[bash-4.2# mysql -uroot -p 密码和redmine密码相同
+./ctlscript.sh restart重启
+（访问地址：http://39.96.221.183/redmine/
+账号密码：admin =Admin7575）
+
+
+四、安装sonar
+sonar qube
+linux版：{ 参考文档：https://blog.csdn.net/u012448904/article/details/81706283（要先建库再启动）
+  SonarQube 启动不能用root启动，所以新建一个用户。必须先启动elasticsearch，才能在启动sonar。sonar文件目录里面有 elasticsearch这个目录。（这块好好看看）}
+
+
+sonar scanner安装
+参考文档：https://www.liangzl.com/get-article-detail-97332.html
+
+【Windows下安装sonar qube https://blog.csdn.net/u012995964/article/details/82495487】
+
+sonar和idea结合https://www.cnblogs.com/milletes/p/5985957.html
+（在maven的配置文件中添加：<profile>
+
+		<id>sonar</id>
+
+		<activation>
+
+			<activeByDefault>true</activeByDefault>
+
+		</activation>
+
+		<properties>
+
+			<sonar.jdbc.url>
+
+				jdbc:mysql://localhost:3306/sonar
+
+			</sonar.jdbc.url>
+
+			<sonar.jdbc.driver>com.mysql.jdbc.Driver</sonar.jdbc.driver>
+
+			<sonar.jdbc.username>root</sonar.jdbc.username>
+
+			<sonar.jdbc.password>root</sonar.jdbc.password>
+
+			<sonar.host.url>http://localhost:9000</sonar.host.url>
+
+		</properties>）
+
+访问网址：http://localhost:9000/projects
+默认账号密码：admin=admin

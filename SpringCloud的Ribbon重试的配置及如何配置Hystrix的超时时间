@@ -1,0 +1,129 @@
+先看下ribbon的配置和hystrix的超时配置
+ribbon:
+  MaxAutoRetries: 1 #最大重试次数，当Eureka中可以找到服务，但是服务连不上时将会重试
+  MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+  OkToRetryOnAllOperations: true # 对所有的操作请求都进行重试，如果是get则可以，如果是post,put等操作没有实现幂等的情况下是很危险的
+  ConnectTimeout: 250 #请求连接的超时时间
+  ReadTimeout: 1000 #请求处理的超时时间
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 4500
+            #如果配置ribbon的重试，hystrix的超时时间要大于ribbon的超时时间，ribbon才会重试
+            #hystrix的超时时间
+看完之后，我有3个问题请读者思考下：
+1、ribbon会发送几次请求？
+
+2、hystrix的超时时间该配置多少？
+
+3、OkToRetryOnAllOperations， 为什么我要配置为true？
+
+ 
+
+答案如下：
+ 
+
+1、ribbon会发送几次请求？
+
+答：4次。
+
+2、hystrix的超时时间该配置多少？
+
+答：>4000毫秒
+
+3、OkToRetryOnAllOperations， 为什么我要配置为true？
+
+答：因为我请求feign接口为post，配置为false时ribbon不会重试。
+
+ 
+
+可能有的人看完跟自己想的答案不是一致的，看完下面你就明白了，最主要的是自己要实验下。
+ 
+
+一般情况下 都是 ribbon 的超时时间（<）hystrix的超时时间（因为涉及到ribbon的重试机制）
+
+因为ribbon的重试机制和Feign的重试机制有冲突，所以源码中默认关闭Feign的重试机制，源码如下
+
+
+
+ 
+
+要开启Feign的重试机制如下：（Feign默认重试五次 源码中有）
+
+ @Bean
+Retryer feignRetryer() {
+        return  new Retryer.Default();
+}
+ 
+
+ribbon:
+  MaxAutoRetries: 1 #最大重试次数，当Eureka中可以找到服务，但是服务连不上时将会重试
+  MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+  OkToRetryOnAllOperations: true # 对所有的操作请求都进行重试，如果是get则可以，如果是post,put等操作没有实现幂等的情况下是很危险的，所以设置为false
+  ConnectTimeout: 250 #请求连接的超时时间
+  ReadTimeout: 1000 #请求处理的超时时间
+根据上面的参数计算重试的次数：
+
+MaxAutoRetries+MaxAutoRetriesNextServer+(MaxAutoRetries *MaxAutoRetriesNextServer)
+
+即重试3次 则一共产生4次调用 。
+
+如果在重试期间，时间超过了hystrix的超时时间，便会立即执行熔断，fallback。所以要根据上面配置的参数计算hystrix的超时时间，使得在重试期间不能达到hystrix的超时时间，不然重试机制就会没有意义 
+
+先说明一下，不要用下面这种公式来配置hystrix的超时时间，不要，不要，重要的事情说3次：
+
+hystrix超时时间的计算： (1 + MaxAutoRetries + MaxAutoRetriesNextServer) * ReadTimeout 即按照以上的配置 hystrix的超时时间应该配置为 （1+1+1）*3=9秒
+
+正确的计算公式：
+
+ReadTimeout+（MaxAutoRetries * ReadTimeout），如果配置的有：MaxAutoRetriesNextServer这个属性，看下面例子：
+ribbon:
+  MaxAutoRetries: 1 #最大重试次数，当Eureka中可以找到服务，但是服务连不上时将会重试
+  MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+  OkToRetryOnAllOperations: true # 对所有的操作请求都进行重试，如果是get则可以，如果是post,put等操作没有实现幂等的情况下是很危险的
+  ConnectTimeout: 250 #请求连接的超时时间
+  ReadTimeout: 1000 #请求处理的超时时间
+这个hystrix的超时时间怎么配置：
+
+ReadTimeout+（MaxAutoRetries * ReadTimeout）+ ReadTimeout+（MaxAutoRetries * ReadTimeout）= 4000ms
+
+那么hystrix的超时时间为：>4000ms
+
+如果MaxAutoRetriesNextServer=1，就加1个：
+
+ReadTimeout+（MaxAutoRetries * ReadTimeout）+ ReadTimeout+（MaxAutoRetries * ReadTimeout）= 4000ms
+
+如果MaxAutoRetriesNextServer=2，就加2个：
+
+ReadTimeout+（MaxAutoRetries * ReadTimeout）+ ReadTimeout+（MaxAutoRetries * ReadTimeout）+ ReadTimeout+（MaxAutoRetries * ReadTimeout）= 6000ms
+
+先算出所有ribbon的超时时间+重试时间的总和，那么hystrix的超时时间大于总和，就可以保证ribbon在重试过程中不会被hystrix熔断。
+
+ 
+
+当ribbon超时后且hystrix没有超时，便会采取重试机制。当OkToRetryOnAllOperations设置为false时，只会对get请求进行重试。如果设置为true，便会对所有的请求进行重试，如果是put或post等写操作，如果服务器接口没做幂等性，会产生不好的结果，所以OkToRetryOnAllOperations慎用。
+ 
+
+ 
+
+如果不配置ribbon的重试次数，默认会重试一次 
+注意： 
+默认情况下,GET方式请求无论是连接异常还是读取异常,都会进行重试 
+非GET方式请求,只有连接异常时,才会进行重试
+
+如果上述配置还没有成功重试，加上如下配置：（开启客户端负载均衡，高版本的默认开启）
+spring:
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true
+总结下：
+摸清了怎么回事，还是挺开心的，试了好多次，不过是有收获的。
+--------------------- 
+作者：胤禛@ 
+来源：CSDN 
+原文：https://blog.csdn.net/l848168/article/details/85090124 
+版权声明：本文为博主原创文章，转载请附上博文链接！

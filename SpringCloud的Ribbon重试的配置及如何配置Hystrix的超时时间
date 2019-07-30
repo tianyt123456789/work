@@ -120,10 +120,3 @@ spring:
     loadbalancer:
       retry:
         enabled: true
-总结下：
-摸清了怎么回事，还是挺开心的，试了好多次，不过是有收获的。
---------------------- 
-作者：胤禛@ 
-来源：CSDN 
-原文：https://blog.csdn.net/l848168/article/details/85090124 
-版权声明：本文为博主原创文章，转载请附上博文链接！

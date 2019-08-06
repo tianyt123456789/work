@@ -1,4 +1,4 @@
-°²×°libevent¡¢libfastcommon
+å®‰è£…libeventã€libfastcommon
 yum -y install libevent
 mv libfastcommonV1.0.7.tar.gz /usr/local/
 cd /usr/local/
@@ -8,7 +8,7 @@ cd libfastcommon-1.0.7/
 ./make.sh install
 cp /usr/lib64/libfastcommon.so /usr/lib/
 
-°²×°tracker£º
+å®‰è£…trackerï¼š
 mv FastDFS_v5.05.tar.gz /usr/local/
 cd /usr/local/
 tar -zxvf FastDFS_v5.05.tar.gz
@@ -19,34 +19,34 @@ cd conf/
 cp * /etc/fdfs/
 cd /etc/fdfs/
 vim tracker.conf
-	base_path=/home/yuqing/fastdfsĞŞ¸ÄÎª£ºbase_path=/home/fastdfs
+	base_path=/home/yuqing/fastdfsä¿®æ”¹ä¸ºï¼šbase_path=/home/fastdfs
 mkdir /home/fastdfs
-/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart£¨Ö´ĞĞÁ½´Î£©
+/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restartï¼ˆæ‰§è¡Œä¸¤æ¬¡ï¼‰
 
 
-°²×°storage£º
+å®‰è£…storageï¼š
 cd /etc/fdfs/
 vim storage.conf
-	base_path=/home/yuqing/fastdfs¸ÄÎª£ºbase_path=/home/fastdfs
-	store_path0=/home/yuqing/fastdfs¸ÄÎª£ºstore_path0=/home/fastdfs/fdfs_storage
+	base_path=/home/yuqing/fastdfsæ”¹ä¸ºï¼šbase_path=/home/fastdfs
+	store_path0=/home/yuqing/fastdfsæ”¹ä¸ºï¼šstore_path0=/home/fastdfs/fdfs_storage
 	tracker_server=192.168.37.161:22122
 mkdir /home/fastdfs/fdfs_storage
-/usr/bin/fdfs_storaged /etc/fdfs/storage.conf restart£¨Ö´ĞĞÁ½´Î£©
+/usr/bin/fdfs_storaged /etc/fdfs/storage.conf restartï¼ˆæ‰§è¡Œä¸¤æ¬¡ï¼‰
 
 
-²âÊÔ£º
+æµ‹è¯•ï¼š
 vim /etc/fdfs/client.conf
 	base_path=/home/fastdfs
 	tracker_server=192.168.37.161:22122
 /usr/bin/fdfs_test /etc/fdfs/client.conf upload install.log
 
-°²×°Nginx-model
+å®‰è£…Nginx-model
 mv fastdfs-nginx-module_v1.16.tar.gz  /usr/local/
 cd /usr/local/
 tar -zxvf fastdfs-nginx-module_v1.16.tar.gz
 cd fastdfs-nginx-module/src/
 vim config
-	ĞŞ¸ÄconfigÎÄ¼ş½«/usr/local/Â·¾¶¸ÄÎª/usr/
+	ä¿®æ”¹configæ–‡ä»¶å°†/usr/local/è·¯å¾„æ”¹ä¸º/usr/
 cp mod_fastdfs.conf /etc/fdfs/
 vim /etc/fdfs/mod_fastdfs.conf
 	base_path=/home/fastdfs
@@ -56,11 +56,11 @@ vim /etc/fdfs/mod_fastdfs.conf
 cp /usr/lib64/libfdfsclient.so /usr/lib/
 mkdir -p /var/temp/nginx/client
 
-°²×°Nginx
+å®‰è£…Nginx
 yum -y install pcre-devel
 yum install -y zlib-devel
 tar -zxvf nginx-1.8.0.tar.gz
-cd nginx-1.8.0£¨½øÈë½âÑ¹Ä¿Â¼ÖĞ,Ö´ĞĞÏÂÃæµÄ½Å±¾£©
+cd nginx-1.8.0ï¼ˆè¿›å…¥è§£å‹ç›®å½•ä¸­,æ‰§è¡Œä¸‹é¢çš„è„šæœ¬ï¼‰
 
 ./configure \
 --prefix=/usr/local/nginx \
@@ -87,7 +87,7 @@ server {
                 ngx_fastdfs_module;
         }
 }
-/usr/local/nginx/sbin/nginx  // Æô¶¯Nginx
+/usr/local/nginx/sbin/nginx  // å¯åŠ¨Nginx
 
 
 
@@ -96,10 +96,14 @@ chkconfig iptables off
 http://192.168.37.161/group1/M00/00/00/wKgloVet2pmAKCe-AAFd-94XTw0759_big.jpg
 
 
-¿ª»úÆô¶¯
+å¼€æœºå¯åŠ¨
 vim /etc/rc.d/rc.local
 /usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart
 /usr/bin/fdfs_storaged /etc/fdfs/storage.conf restart
 /usr/local/nginx/sbin/nginx
 
 
+
+
+
+ç½‘å€ï¼šhttps://www.cnblogs.com/yufeng218/p/8111961.html
